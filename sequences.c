@@ -154,7 +154,7 @@ int main(int argc, char **argv)     /* Number of command line arguments, Command
  printf("-----------------------------------------------\n");
 
   for(j=0;j<3;j++){
-    e_center = e_center + 0.1;
+    e_center = e_center - 0.1;
     ratio_r = ratio_r - 0.01;
    //ierr = SetUpStar(eos_file, eos_type, data_dir, Gamma_P, B, K,
      //   &eos, &star); 
