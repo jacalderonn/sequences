@@ -144,7 +144,7 @@ int main(int argc, char **argv)     /* Number of command line arguments, Command
     ierr = MakeSphere(&eos, &star, e_center);
     rns(ratio_r, e_center, &eos, &star); 
     //ierr = SetSpin(&eos, &star, e_center, spin_freq);
-    ierr = Surface(&eos,&star);
+    //ierr = Surface(&eos,&star);
   
     printf("%g \t %4.3f \t %4.3f\t %4.2f \t %.2f \t%4.1f \n",
 	      star.e_center, star.Mass/MSUN, star.Mass_0/MSUN, star.R_e*1e-5, ratio_r, star.Omega/(2.0*PI));
@@ -153,15 +153,15 @@ int main(int argc, char **argv)     /* Number of command line arguments, Command
     
  printf("-----------------------------------------------\n");
   ratio_r = ratio_r - 0.01;
- 
+
   for(j=0;j<3;j++){
-    e_center = e_center - 0.1;
+    e_center = e_center - 0.01; 
     
    //ierr = SetUpStar(eos_file, eos_type, data_dir, Gamma_P, B, K,
      //   &eos, &star); 
    ierr = MakeSphere(&eos, &star, e_center);
    rns(ratio_r, e_center, &eos, &star); 
-   ierr = Surface(&eos,&star);
+   //ierr = Surface(&eos,&star);
 
    printf("%g \t %4.3f \t %4.3f\t %4.2f \t %.2f \t%4.1f \n",
         star.e_center, star.Mass/MSUN, star.Mass_0/MSUN, star.R_e*1e-5, ratio_r, star.Omega/(2.0*PI));
@@ -184,7 +184,7 @@ int main(int argc, char **argv)     /* Number of command line arguments, Command
     ierr = MakeSphere(&eos, &star, e_center);
     rns(ratio_r, e_center, &eos, &star); 
     //ierr = SetSpin(&eos, &star, e_center, spin_freq);
-    ierr = Surface(&eos,&star);
+    //ierr = Surface(&eos,&star);
   
     printf("%.4g \t%4.3f \t %4.3f \t %4.2f \t %.2f \t%4.1f \n",
         star.e_center, star.Mass/MSUN, star.Mass_0/MSUN, star.R_e*1e-5, ratio_r, star.Omega/(2.0*PI));
