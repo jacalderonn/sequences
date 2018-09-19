@@ -38,11 +38,15 @@ int main(int argc, char **argv)     /* Number of command line arguments, Command
    spin_freq=100,                  /* Spin Frequency */
     Gamma_P;                      /* Gamma for polytropic EOS */  
                 
-    int j;
+  int j;
 
   int nummodels=20;
   float e_c[4], M_0[4];
-  float M0, energy_value, ratio_r = 1.0;
+  float M0, energy_value, temp_energy, ratio_r = 1.0, ej;
+  //double Kfreq, Kfreq_j;
+
+  FILE *fpointer;
+  fpointer = fopen("E_M_M0_data.txt", "a");
 
   char eos_file[80] = "no EOS file specified";   /* EOS file name */
   char eos_type[80] = "tab";                     /* EOS type (poly or tab) */
@@ -135,65 +139,65 @@ int main(int argc, char **argv)     /* Number of command line arguments, Command
   //printf("The star infrastructure has been set up! \n");
 
   e_center = e_min;
+  temp_energy = e_center;
 
-  printf("e_c \t Mass \t Mass_0\t Radius\tR-ratio\t Spin \n");
-  printf("e15 \t Msun \t Msun\t km\t --  \t Hz \n");
+  printf("e_c \t Mass \t Mass_0\t Radius\tR-ratio\t Spin\t K freq\n");
+  printf("e15 \t Msun \t Msun\t km\t --  \t Hz \t Hz \n");
 
   //while ( e_center <= e_max ){
-
+  
     ierr = MakeSphere(&eos, &star, e_center);
     rns(ratio_r, e_center, &eos, &star); 
     //ierr = SetSpin(&eos, &star, e_center, spin_freq);
     //ierr = Surface(&eos,&star);
   
-    printf("%g \t %4.3f \t %4.3f\t %4.2f \t %.2f \t%4.1f \n",
-	      star.e_center, star.Mass/MSUN, star.Mass_0/MSUN, star.R_e*1e-5, ratio_r, star.Omega/(2.0*PI));
+    printf("%g \t %4.3f \t %4.3f\t %4.2f \t %.2f \t%4.1f \t%4.1f\n",
+	      star.e_center, star.Mass/MSUN, star.Mass_0/MSUN, star.R_e*1e-5, ratio_r, star.Omega/(2.0*PI), star.Omega_K/(2.0*PI));
+
+    fprintf(fpointer, "%g %g %g %g %g %g %g\n", 
+        star.e_center, star.Mass/MSUN, star.Mass_0/MSUN, star.R_e*1e-5, ratio_r, star.Omega/(2.0*PI), star.Omega_K/(2.0*PI));
 
     M0 = star.Mass_0/MSUN;
-    
- printf("-----------------------------------------------\n");
+ while(1){   
+ printf("-------------------------------------------------------------\n");
   ratio_r = ratio_r - 0.01;
 
   for(j=0;j<3;j++){
-    e_center = e_center - 0.01; 
-    
-   //ierr = SetUpStar(eos_file, eos_type, data_dir, Gamma_P, B, K,
-     //   &eos, &star); 
-   ierr = MakeSphere(&eos, &star, e_center);
-   rns(ratio_r, e_center, &eos, &star); 
-   //ierr = Surface(&eos,&star);
+   ej = temp_energy - 0.01*j; 
 
-   printf("%g \t %4.3f \t %4.3f\t %4.2f \t %.2f \t%4.1f \n",
-        star.e_center, star.Mass/MSUN, star.Mass_0/MSUN, star.R_e*1e-5, ratio_r, star.Omega/(2.0*PI));
+   ierr = MakeSphere(&eos, &star, ej);
+   rns(ratio_r, ej, &eos, &star); 
 
-   e_c[j] = star.e_center;
+   printf("%.4g \t %4.3f \t %4.3f\t %4.2f \t %.2f \t%4.1f \n",
+        ej, star.Mass/MSUN, star.Mass_0/MSUN, star.R_e*1e-5, ratio_r, star.Omega/(2.0*PI));
+
+   e_c[j] = ej;
    M_0[j] = star.Mass_0/MSUN;
    }
- printf("-----------------------------------------------\n");
-
-   printf("M_0 = %g\n",M0);
-   printf("energies:  %g, %g, %g\n",e_c[0], e_c[1], e_c[2]);
-   printf("M_0's: %g, %g, %g\n",M_0[0], M_0[1], M_0[2]);
+ //printf("-----------------------------------------------\n");
+   //printf("M_0 = %g\n",M0);
+   //printf("energies:  %g, %g, %g\n",e_c[0], e_c[1], e_c[2]);
+   //printf("M_0's: %g, %g, %g\n",M_0[0], M_0[1], M_0[2]);
 
    energy_value = polyinter(M0, e_c, M_0);
 
- printf("------------------------------------------------\n");
-
-    e_center = energy_value;
-
-    ierr = MakeSphere(&eos, &star, e_center);
-    rns(ratio_r, e_center, &eos, &star); 
-    //ierr = SetSpin(&eos, &star, e_center, spin_freq);
-    //ierr = Surface(&eos,&star);
+ printf("-------------------------------------------------------------\n");
+    temp_energy = energy_value;
+    ierr = MakeSphere(&eos, &star, energy_value);
+    rns(ratio_r, energy_value, &eos, &star); 
   
-    printf("%.4g \t%4.3f \t %4.3f \t %4.2f \t %.2f \t%4.1f \n",
-        star.e_center, star.Mass/MSUN, star.Mass_0/MSUN, star.R_e*1e-5, ratio_r, star.Omega/(2.0*PI));
+    printf("%.4g \t%4.3f \t %4.3f \t %4.2f \t %.2f \t%4.1f \t%4.1f\n",
+        energy_value, star.Mass/MSUN, star.Mass_0/MSUN, star.R_e*1e-5, ratio_r, star.Omega/(2.0*PI), star.Omega_K/(2.0*PI));
 
+    if( (star.Omega/(2.0*PI)) > (star.Omega_K/(2.0*PI))) break;
+
+    fprintf(fpointer, "%g %g %g %g %g %g %g\n", 
+        energy_value, star.Mass/MSUN, star.Mass_0/MSUN, star.R_e*1e-5, ratio_r, star.Omega/(2.0*PI), star.Omega_K/(2.0*PI));
 
     //e_center += (e_max-e_min)/(nummodels*1.0);
   //}
-
-
+  }
+  fclose(fpointer);
   return 0;
 }
 

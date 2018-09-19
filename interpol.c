@@ -1,5 +1,10 @@
 /*****************************************************************************
-*	polynomial interpolation function 
+                    Polynomial interpolation function.
+It calculates a value of central energy density of a star that has a baryonic mass
+that is equal to that of a fixed star. 
+
+The function uses the value of M_0 of the fixed star and the baryonic mass and 
+central energy density of three stars to do the interpolation.
 ******************************************************************************/
 
 #include <stdio.h>
