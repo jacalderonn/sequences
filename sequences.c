@@ -40,13 +40,14 @@ int main(int argc, char **argv)     /* Number of command line arguments, Command
                 
   int j;
 
-  int nummodels=20;
+  int a = 0, numseq=2;
   float e_c[4], M_0[4];
   float M0, energy_value, temp_energy, ratio_r = 1.0, ej;
+  float maxmass;
   //double Kfreq, Kfreq_j;
 
   FILE *fpointer;
-  fpointer = fopen("E_M_M0_data.txt", "a");
+  fpointer = fopen("NS_data.txt", "a");
 
   char eos_file[80] = "no EOS file specified";   /* EOS file name */
   char eos_type[80] = "tab";                     /* EOS type (poly or tab) */
@@ -97,9 +98,17 @@ int main(int argc, char **argv)     /* Number of command line arguments, Command
 	  e_max *= C*C*KSCALE;
 	break;
 
-      case 'n':
-	sscanf(argv[i+1],"%d",&nummodels);
+      case 'n':  
+  /* CHOOSE THE NUMBER OF SEQUENCES 
+     PRODUCED */
+	sscanf(argv[i+1],"%d",&numseq);
 	break;
+
+  case 'm':  
+  /* CHOOSE THE NUMBER OF SEQUENCES 
+     PRODUCED */
+  sscanf(argv[i+1],"%f",&maxmass);
+  break;
 
      case 's':
 	/* CHOOSE THE SPIN FREQUENCY (HZ) */
@@ -140,16 +149,22 @@ int main(int argc, char **argv)     /* Number of command line arguments, Command
 
   e_center = e_min;
   temp_energy = e_center;
-
+  printf("e_center = %f\n", e_center);
   printf("e_c \t Mass \t Mass_0\t Radius\tR-ratio\t Spin\t K freq\n");
   printf("e15 \t Msun \t Msun\t km\t --  \t Hz \t Hz \n");
 
-  //while ( e_center <= e_max ){
+  while ( a < numseq  ){
+    ratio_r = 1.0;
+    temp_energy = e_center;
+    printf("Energy center = %g \n",e_center);
   
     ierr = MakeSphere(&eos, &star, e_center);
     rns(ratio_r, e_center, &eos, &star); 
-    //ierr = SetSpin(&eos, &star, e_center, spin_freq);
-    //ierr = Surface(&eos,&star);
+
+    if((star.Mass/MSUN) > maxmass){
+      printf("The maximum mass has been reached\n");
+      break;
+    }
   
     printf("%g \t %4.3f \t %4.3f\t %4.2f \t %.2f \t%4.1f \t%4.1f\n",
 	      star.e_center, star.Mass/MSUN, star.Mass_0/MSUN, star.R_e*1e-5, ratio_r, star.Omega/(2.0*PI), star.Omega_K/(2.0*PI));
@@ -185,17 +200,20 @@ int main(int argc, char **argv)     /* Number of command line arguments, Command
     temp_energy = energy_value;
     ierr = MakeSphere(&eos, &star, energy_value);
     rns(ratio_r, energy_value, &eos, &star); 
-  
+    
     printf("%.4g \t%4.3f \t %4.3f \t %4.2f \t %.2f \t%4.1f \t%4.1f\n",
         energy_value, star.Mass/MSUN, star.Mass_0/MSUN, star.R_e*1e-5, ratio_r, star.Omega/(2.0*PI), star.Omega_K/(2.0*PI));
 
     if( (star.Omega/(2.0*PI)) > (star.Omega_K/(2.0*PI))) break;
 
+    //printf("M0 = %g \t Mass_0 = %g\n", M0, star.Mass_0/MSUN);
+    if((round(M0*10.0)/10.0) == (round(star.Mass_0/MSUN * 10.0)/10.0))
     fprintf(fpointer, "%g %g %g %g %g %g %g\n", 
         energy_value, star.Mass/MSUN, star.Mass_0/MSUN, star.R_e*1e-5, ratio_r, star.Omega/(2.0*PI), star.Omega_K/(2.0*PI));
 
-    //e_center += (e_max-e_min)/(nummodels*1.0);
-  //}
+   }
+   e_center = e_center + 0.1;
+   a = a + 1;
   }
   fclose(fpointer);
   return 0;
