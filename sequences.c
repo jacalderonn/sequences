@@ -205,6 +205,10 @@ int main(int argc, char **argv)     /* Number of command line arguments, Command
         energy_value, star.Mass/MSUN, star.Mass_0/MSUN, star.R_e*1e-5, ratio_r, star.Omega/(2.0*PI), star.Omega_K/(2.0*PI));
 
     if( (star.Omega/(2.0*PI)) > (star.Omega_K/(2.0*PI))) break;
+    if(isnan(star.Mass/MSUN)){
+      printf("Mass is NAN\n");
+      break;
+    }
 
     //printf("M0 = %g \t Mass_0 = %g\n", M0, star.Mass_0/MSUN);
     if((round(M0*10.0)/10.0) == (round(star.Mass_0/MSUN * 10.0)/10.0))
