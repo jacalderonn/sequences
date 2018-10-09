@@ -730,7 +730,8 @@ int MaxMass(double e_min, double e_max, EOS *eos, NeutronStar *star, char name[8
   double gold=0.61803399;
   double tol=1e-4;
 
-  FILE *output;
+  FILE *output, *franges;
+  franges = fopen("E_range.txt", "a");
 
   printf("Entering maxmass\n");
 
@@ -877,6 +878,7 @@ int MaxMass(double e_min, double e_max, EOS *eos, NeutronStar *star, char name[8
     printf("Baryon Mass = %g Msun\n",star->Mass_0/MSUN);
     printf("Radius = %g  zeta=M/R=%g \n",star->R_e*1e-5, G*star->Mass/(star->R_e*C*C));
 
+    fprintf(franges, "%g %g %g %g \n", e_max, star->Mass/MSUN, star->Mass_0/MSUN, star->R_e*1e-5);
 
 
   }
@@ -884,10 +886,12 @@ int MaxMass(double e_min, double e_max, EOS *eos, NeutronStar *star, char name[8
     {
       printf("Maximum mass not bracketed!! Use a larger maximum mass.\n");
       ierr = 1;
+      fprintf(franges, "Modify range of energy \n");
     }
 
 
   fclose(output);
+  fclose(franges);
 
   return ierr;
 
