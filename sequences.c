@@ -42,7 +42,7 @@ int main(int argc, char **argv)     /* Number of command line arguments, Command
 
   int a = 0, numseq=2;
   float e_c[4], M_0[4];
-  float M0, energy_value, temp_energy, ratio_r = 1.0, ej;
+  float M0, Mstat, Rstat, energy_value, temp_energy, ratio_r = 1.0, ej;
   float maxmass;
   //double Kfreq, Kfreq_j;
 
@@ -105,8 +105,7 @@ int main(int argc, char **argv)     /* Number of command line arguments, Command
 	break;
 
   case 'm':  
-  /* CHOOSE THE NUMBER OF SEQUENCES 
-     PRODUCED */
+  /* CHOOSE MAXIMUM MASS FOR THE EOS */
   sscanf(argv[i+1],"%f",&maxmass);
   break;
 
@@ -149,9 +148,9 @@ int main(int argc, char **argv)     /* Number of command line arguments, Command
 
   e_center = e_min;
   temp_energy = e_center;
-  printf("e_center = %f\n", e_center);
-  printf("e_c \t Mass \t Mass_0\t Radius\tR-ratio\t Spin\t K freq\n");
-  printf("e15 \t Msun \t Msun\t km\t --  \t Hz \t Hz \n");
+  
+  printf("e_c \t Mass \t Mass_0\t StatM \t Radius\tR-ratio\t StatR \t Spin\t K freq\n");
+  printf("e15 \t Msun \t Msun\t Msun\t km\t --  \t km \t Hz \t Hz \n");
 
   while ( a < numseq  ){
     ratio_r = 1.0;
@@ -165,17 +164,20 @@ int main(int argc, char **argv)     /* Number of command line arguments, Command
       printf("The maximum mass has been reached\n");
       break;
     }
-  
-    printf("%g \t %4.3f \t %4.3f\t %4.2f \t %.2f \t%4.1f \t%4.1f\n",
-	      star.e_center, star.Mass/MSUN, star.Mass_0/MSUN, star.R_e*1e-5, ratio_r, star.Omega/(2.0*PI), star.Omega_K/(2.0*PI));
 
-    fprintf(fpointer, "%g %g %g %g %g %g %g\n", 
-        star.e_center, star.Mass/MSUN, star.Mass_0/MSUN, star.R_e*1e-5, ratio_r, star.Omega/(2.0*PI), star.Omega_K/(2.0*PI));
+    Mstat = star.Mass/MSUN;
+    Rstat = star.R_e*1e-5;
+  
+    printf("%g \t %4.3f \t %4.3f\t %4.3f\t %4.2f \t %.2f \t %.2f \t%4.1f \t%4.1f\n",
+	      star.e_center, star.Mass/MSUN, star.Mass_0/MSUN, Mstat, star.R_e*1e-5, ratio_r, Rstat, star.Omega/(2.0*PI), star.Omega_K/(2.0*PI));
+
+    fprintf(fpointer, "%g %g %g %g %g %g %g %g %g\n", 
+        star.e_center, star.Mass/MSUN, star.Mass_0/MSUN, Mstat, star.R_e*1e-5, ratio_r, Rstat, star.Omega/(2.0*PI), star.Omega_K/(2.0*PI));
 
     M0 = star.Mass_0/MSUN;
  while(1){   
- printf("-------------------------------------------------------------\n");
-  ratio_r = ratio_r - 0.01;
+ printf("----------------------------------------------------------------------\n");
+  ratio_r = ratio_r - 0.001;
 
   for(j=0;j<3;j++){
    ej = temp_energy - 0.01*j; 
@@ -183,8 +185,8 @@ int main(int argc, char **argv)     /* Number of command line arguments, Command
    ierr = MakeSphere(&eos, &star, ej);
    rns(ratio_r, ej, &eos, &star); 
 
-   printf("%.4g \t %4.3f \t %4.3f\t %4.2f \t %.2f \t%4.1f \n",
-        ej, star.Mass/MSUN, star.Mass_0/MSUN, star.R_e*1e-5, ratio_r, star.Omega/(2.0*PI));
+   printf("%.4g \t %4.3f \t %4.3f\t %4.3f\t %4.2f \t %.2f \t %4.2f \t%4.1f \n",
+        ej, star.Mass/MSUN, star.Mass_0/MSUN, Mstat, star.R_e*1e-5, ratio_r, Rstat, star.Omega/(2.0*PI));
 
    e_c[j] = ej;
    M_0[j] = star.Mass_0/MSUN;
@@ -196,13 +198,13 @@ int main(int argc, char **argv)     /* Number of command line arguments, Command
 
    energy_value = polyinter(M0, e_c, M_0);
 
- printf("-------------------------------------------------------------\n");
+ printf("----------------------------------------------------------------------\n");
     temp_energy = energy_value;
     ierr = MakeSphere(&eos, &star, energy_value);
     rns(ratio_r, energy_value, &eos, &star); 
     
-    printf("%.4g \t%4.3f \t %4.3f \t %4.2f \t %.2f \t%4.1f \t%4.1f\n",
-        energy_value, star.Mass/MSUN, star.Mass_0/MSUN, star.R_e*1e-5, ratio_r, star.Omega/(2.0*PI), star.Omega_K/(2.0*PI));
+    printf("%.4g \t%4.3f \t %4.3f \t %4.3f\t %4.2f \t %.2f \t %4.2f \t%4.1f \t%4.1f\n",
+        energy_value, star.Mass/MSUN, star.Mass_0/MSUN, Mstat, star.R_e*1e-5, ratio_r, Rstat, star.Omega/(2.0*PI), star.Omega_K/(2.0*PI));
 
     if( (star.Omega/(2.0*PI)) > (star.Omega_K/(2.0*PI))) break;
     if(isnan(star.Mass/MSUN)){
@@ -212,8 +214,8 @@ int main(int argc, char **argv)     /* Number of command line arguments, Command
 
     //printf("M0 = %g \t Mass_0 = %g\n", M0, star.Mass_0/MSUN);
     if((round(M0*100.0)/100.0) == (round(star.Mass_0/MSUN * 100.0)/100.0))
-    fprintf(fpointer, "%g %g %g %g %g %g %g\n", 
-        energy_value, star.Mass/MSUN, star.Mass_0/MSUN, star.R_e*1e-5, ratio_r, star.Omega/(2.0*PI), star.Omega_K/(2.0*PI));
+    fprintf(fpointer, "%g %g %g %g %g %g %g %g %g\n", 
+        energy_value, star.Mass/MSUN, star.Mass_0/MSUN, Mstat, star.R_e*1e-5, ratio_r, Rstat, star.Omega/(2.0*PI), star.Omega_K/(2.0*PI));
 
    }
    e_center = e_center + 0.1;
