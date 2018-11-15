@@ -115,6 +115,11 @@ int main(int argc, char **argv)     /* Number of command line arguments, Command
 	printf("spin=%g\n",spin_freq);
 	break;
 
+       case 'r':
+  /* CHOOSE THE RATIO OF r_p and r_e */
+  sscanf(argv[i+1],"%f",&ratio_r);
+  break;
+
       case 'h': 
 	fprintf(stderr,"\nQuick help:\n\n");
 	fprintf(stderr,"  -q EOS type (tab)\n"); 
@@ -152,6 +157,7 @@ int main(int argc, char **argv)     /* Number of command line arguments, Command
   printf("e_c \t Mass \t Mass_0\t StatM \t Radius\tR-ratio\t StatR \t Spin\t K freq\n");
   printf("e15 \t Msun \t Msun\t Msun\t km\t --  \t km \t Hz \t Hz \n");
 
+  if(ratio_r == 1.0){
   while ( a < numseq  ){
     ratio_r = 1.0;
     temp_energy = e_center;
@@ -168,7 +174,7 @@ int main(int argc, char **argv)     /* Number of command line arguments, Command
     Mstat = star.Mass/MSUN;
     Rstat = star.R_e*1e-5;
   
-    printf("%g \t %4.3f \t %4.3f\t %4.3f\t %4.2f \t %.2f \t %.2f \t%4.1f \t%4.1f\n",
+    printf("%g \t%.5f  %.5f  %.5f %.5f %.3f %.5f %.3f %.5f\n",
 	      star.e_center, star.Mass/MSUN, star.Mass_0/MSUN, Mstat, star.R_e*1e-5, ratio_r, Rstat, star.Omega/(2.0*PI), star.Omega_K/(2.0*PI));
 
     fprintf(fpointer, "%g %g %g %g %g %g %g %g %g\n", 
@@ -176,8 +182,8 @@ int main(int argc, char **argv)     /* Number of command line arguments, Command
 
     M0 = star.Mass_0/MSUN;
  while(1){   
- printf("----------------------------------------------------------------------\n");
-  ratio_r = ratio_r - 0.001;
+ printf("---------------------------------------------------------------------------\n");
+  ratio_r = ratio_r - 0.01;
 
   for(j=0;j<3;j++){
    ej = temp_energy - 0.01*j; 
@@ -185,7 +191,7 @@ int main(int argc, char **argv)     /* Number of command line arguments, Command
    ierr = MakeSphere(&eos, &star, ej);
    rns(ratio_r, ej, &eos, &star); 
 
-   printf("%.4g \t %4.3f \t %4.3f\t %4.3f\t %4.2f \t %.2f \t %4.2f \t%4.1f \n",
+   printf("%g %.5f  %.5f  %.5f %.5f %.3f %.4f %.4f \n",
         ej, star.Mass/MSUN, star.Mass_0/MSUN, Mstat, star.R_e*1e-5, ratio_r, Rstat, star.Omega/(2.0*PI));
 
    e_c[j] = ej;
@@ -198,12 +204,17 @@ int main(int argc, char **argv)     /* Number of command line arguments, Command
 
    energy_value = polyinter(M0, e_c, M_0);
 
- printf("----------------------------------------------------------------------\n");
+ printf("---------------------------------------------------------------------------\n");
     temp_energy = energy_value;
     ierr = MakeSphere(&eos, &star, energy_value);
-    rns(ratio_r, energy_value, &eos, &star); 
-    
-    printf("%.4g \t%4.3f \t %4.3f \t %4.3f\t %4.2f \t %.2f \t %4.2f \t%4.1f \t%4.1f\n",
+    //rns(ratio_r, energy_value, &eos, &star); 
+
+    if(ratio_r < 0.7)
+      rns(0.7, ej, &eos, &star);
+    else
+      rns(ratio_r, ej, &eos, &star); 
+
+    printf("%g %.5f  %.5f  %.5f %.5f %.3f %.5f %.3f %.5f\n",
         energy_value, star.Mass/MSUN, star.Mass_0/MSUN, Mstat, star.R_e*1e-5, ratio_r, Rstat, star.Omega/(2.0*PI), star.Omega_K/(2.0*PI));
 
     if( (star.Omega/(2.0*PI)) > (star.Omega_K/(2.0*PI))) break;
@@ -221,6 +232,19 @@ int main(int argc, char **argv)     /* Number of command line arguments, Command
    e_center = e_center + 0.1;
    a = a + 1;
   }
+ }
+else{
+    ierr = MakeSphere(&eos, &star, e_center);
+    rns(ratio_r, e_center, &eos, &star); 
+
+    Mstat = star.Mass/MSUN;
+    Rstat = star.R_e*1e-5;
+  
+    printf("%g %.5f  %.5f  %.5f %.5f %.3f %.5f %.3f %.5f\n",
+        star.e_center, star.Mass/MSUN, star.Mass_0/MSUN, Mstat, star.R_e*1e-5, ratio_r, Rstat, star.Omega/(2.0*PI), star.Omega_K/(2.0*PI));
+
+ }
+
   fclose(fpointer);
   return 0;
 }
