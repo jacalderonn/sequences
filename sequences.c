@@ -157,7 +157,7 @@ int main(int argc, char **argv)     /* Number of command line arguments, Command
   printf("e_c \t Mass \t Mass_0\t StatM \t Radius\tR-ratio\t StatR \t Spin\t K freq\n");
   printf("e15 \t Msun \t Msun\t Msun\t km\t --  \t km \t Hz \t Hz \n");
 
-  if(ratio_r == 1.0){
+  //if(ratio_r == 1.0){
   while ( a < numseq  ){
     ratio_r = 1.0;
     temp_energy = e_center;
@@ -177,7 +177,7 @@ int main(int argc, char **argv)     /* Number of command line arguments, Command
     printf("%g \t%.5f  %.5f  %.5f %.5f %.3f %.5f %.3f %.5f\n",
 	      star.e_center, star.Mass/MSUN, star.Mass_0/MSUN, Mstat, star.R_e*1e-5, ratio_r, Rstat, star.Omega/(2.0*PI), star.Omega_K/(2.0*PI));
 
-    fprintf(fpointer, "%g %g %g %g %g %g %g %g %g\n", 
+    fprintf(fpointer, "%7g %7g %7g %6g %8g %4g %6g %7g %6g\n", 
         star.e_center, star.Mass/MSUN, star.Mass_0/MSUN, Mstat, star.R_e*1e-5, ratio_r, Rstat, star.Omega/(2.0*PI), star.Omega_K/(2.0*PI));
 
     M0 = star.Mass_0/MSUN;
@@ -189,7 +189,11 @@ int main(int argc, char **argv)     /* Number of command line arguments, Command
    ej = temp_energy - 0.01*j; 
 
    ierr = MakeSphere(&eos, &star, ej);
-   rns(ratio_r, ej, &eos, &star); 
+   //rns(ratio_r, ej, &eos, &star); 
+   if(ratio_r < 0.7)
+      rns(0.7, ej, &eos, &star);
+  
+      rns(ratio_r, ej, &eos, &star); 
 
    printf("%g %.5f  %.5f  %.5f %.5f %.3f %.4f %.4f \n",
         ej, star.Mass/MSUN, star.Mass_0/MSUN, Mstat, star.R_e*1e-5, ratio_r, Rstat, star.Omega/(2.0*PI));
@@ -211,7 +215,7 @@ int main(int argc, char **argv)     /* Number of command line arguments, Command
 
     if(ratio_r < 0.7)
       rns(0.7, ej, &eos, &star);
-    else
+    
       rns(ratio_r, ej, &eos, &star); 
 
     printf("%g %.5f  %.5f  %.5f %.5f %.3f %.5f %.3f %.5f\n",
@@ -225,16 +229,28 @@ int main(int argc, char **argv)     /* Number of command line arguments, Command
 
     //printf("M0 = %g \t Mass_0 = %g\n", M0, star.Mass_0/MSUN);
     if((round(M0*100.0)/100.0) == (round(star.Mass_0/MSUN * 100.0)/100.0))
-    fprintf(fpointer, "%g %g %g %g %g %g %g %g %g\n", 
+    fprintf(fpointer, "%7g %7g %7g %6g %8g %4g %6g %7g %6g\n", 
         energy_value, star.Mass/MSUN, star.Mass_0/MSUN, Mstat, star.R_e*1e-5, ratio_r, Rstat, star.Omega/(2.0*PI), star.Omega_K/(2.0*PI));
 
    }
    e_center = e_center + 0.1;
    a = a + 1;
   }
- }
-else{
+ //}
+ /*
+//else{
+    ratio_r = 0.70;
     ierr = MakeSphere(&eos, &star, e_center);
+    rns(ratio_r, e_center, &eos, &star); 
+
+    Mstat = star.Mass/MSUN;
+    Rstat = star.R_e*1e-5;
+  
+    printf("%g %4.5f  %.5f  %.5f %.5f %.3f %.5f %.3f %.5f\n",
+        star.e_center, star.Mass/MSUN, star.Mass_0/MSUN, Mstat, star.R_e*1e-5, ratio_r, Rstat, star.Omega/(2.0*PI), star.Omega_K/(2.0*PI));
+
+    ratio_r = 0.644;
+    //ierr = MakeSphere(&eos, &star, e_center);
     rns(ratio_r, e_center, &eos, &star); 
 
     Mstat = star.Mass/MSUN;
@@ -242,8 +258,30 @@ else{
   
     printf("%g %.5f  %.5f  %.5f %.5f %.3f %.5f %.3f %.5f\n",
         star.e_center, star.Mass/MSUN, star.Mass_0/MSUN, Mstat, star.R_e*1e-5, ratio_r, Rstat, star.Omega/(2.0*PI), star.Omega_K/(2.0*PI));
+        
 
- }
+    ratio_r = 0.643;
+    //ierr = MakeSphere(&eos, &star, e_center);
+    rns(ratio_r, e_center, &eos, &star); 
+
+    Mstat = star.Mass/MSUN;
+    Rstat = star.R_e*1e-5;
+  
+    printf("%g %.5f  %.5f  %.5f %.5f %.3f %.5f %.3f %.5f\n",
+        star.e_center, star.Mass/MSUN, star.Mass_0/MSUN, Mstat, star.R_e*1e-5, ratio_r, Rstat, star.Omega/(2.0*PI), star.Omega_K/(2.0*PI));
+  
+    ratio_r = 0.640;
+    //ierr = MakeSphere(&eos, &star, e_center);
+    rns(ratio_r, e_center, &eos, &star); 
+
+    Mstat = star.Mass/MSUN;
+    Rstat = star.R_e*1e-5;
+  
+    printf("%g %4.5f  %4.5f  %4.5f %.5f %.3f %.5f %.3f %.5f\n",
+        star.e_center, star.Mass/MSUN, star.Mass_0/MSUN, Mstat, star.R_e*1e-5, ratio_r, Rstat, star.Omega/(2.0*PI), star.Omega_K/(2.0*PI));
+
+*/
+// }
 
   fclose(fpointer);
   return 0;
