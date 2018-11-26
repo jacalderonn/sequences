@@ -177,8 +177,8 @@ int main(int argc, char **argv)     /* Number of command line arguments, Command
     printf("%g \t%.5f  %.5f  %.5f %.5f %.3f %.5f %.3f %.5f\n",
 	      star.e_center, star.Mass/MSUN, star.Mass_0/MSUN, Mstat, star.R_e*1e-5, ratio_r, Rstat, star.Omega/(2.0*PI), star.Omega_K/(2.0*PI));
 
-    fprintf(fpointer, "%7g %7g %7g %6g %8g %4g %6g %7g %6g\n", 
-        star.e_center, star.Mass/MSUN, star.Mass_0/MSUN, Mstat, star.R_e*1e-5, ratio_r, Rstat, star.Omega/(2.0*PI), star.Omega_K/(2.0*PI));
+    fprintf(fpointer, "%7g %7g %7g %6g %4g %8g %4g %6g %7g %6g  %g\n", 
+        star.e_center, star.Mass/MSUN, star.Mass_0/MSUN, Mstat, maxmass, star.R_e*1e-5, ratio_r, Rstat, star.Omega/(2.0*PI), star.Omega_K/(2.0*PI), star.ang_mom);
 
     M0 = star.Mass_0/MSUN;
  while(1){   
@@ -229,8 +229,8 @@ int main(int argc, char **argv)     /* Number of command line arguments, Command
 
     //printf("M0 = %g \t Mass_0 = %g\n", M0, star.Mass_0/MSUN);
     if((round(M0*100.0)/100.0) == (round(star.Mass_0/MSUN * 100.0)/100.0))
-    fprintf(fpointer, "%7g %7g %7g %6g %8g %4g %6g %7g %6g\n", 
-        energy_value, star.Mass/MSUN, star.Mass_0/MSUN, Mstat, star.R_e*1e-5, ratio_r, Rstat, star.Omega/(2.0*PI), star.Omega_K/(2.0*PI));
+    fprintf(fpointer, "%7g %7g %7g %6g %4g %8g %4g %6g %7g %6g  %g\n", 
+        energy_value, star.Mass/MSUN, star.Mass_0/MSUN, Mstat, maxmass, star.R_e*1e-5, ratio_r, Rstat, star.Omega/(2.0*PI), star.Omega_K/(2.0*PI), star.ang_mom);
 
    }
    e_center = e_center + 0.1;
