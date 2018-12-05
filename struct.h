@@ -35,6 +35,7 @@ typedef struct {
   double *gravity_surf; /*The acceleration due to gravity at the surface */
   double Mass;                 /*In Solar Mass Units*/
   double Mass_0;               /*In Solar Mass Units*/
+  double Mp;
   double r_ratio;              /*Ratio of polar to equatoral radius*/
   double e_center;             /*Energy Density at the center of the star*/
   double p_center;             /*Pressure at the center of the star*/
