@@ -44,7 +44,7 @@ int main(int argc, char **argv)     /* Number of command line arguments, Command
   float e_c[4], M_0[4];
   float M0, Mstat, Rstat, energy_value, temp_energy, ratio_r = 1.0, ej;
   float maxmass;
-  float T;
+  float T, W;
   //double Kfreq, Kfreq_j;
 
   FILE *fpointer;
@@ -175,13 +175,14 @@ int main(int argc, char **argv)     /* Number of command line arguments, Command
     Mstat = star.Mass/MSUN;
     Rstat = star.R_e*1e-5;
 
-    T = (0.5*star.Omega*star.ang_mom)/(C*C);
+   T = (0.5*star.ang_mom*star.Omega)/(C*C);
+   W = star.Mp + (T/MSUN) - (star.Mass/MSUN);
   
     printf("%g \t%.5f  %.5f  %.5f %.5f %.3f %.5f %.3f %.5f\n",
 	      star.e_center, star.Mass/MSUN, star.Mass_0/MSUN, Mstat, star.R_e*1e-5, ratio_r, Rstat, star.Omega/(2.0*PI), star.Omega_K/(2.0*PI));
 
-    fprintf(fpointer, "%7g %7g %7g %6g %4g %8g %4g %6g %7g %6g  %g  %g\n", 
-        star.e_center, star.Mass/MSUN, star.Mass_0/MSUN, Mstat, maxmass, star.R_e*1e-5, ratio_r, Rstat, star.Omega/(2.0*PI), star.Omega_K/(2.0*PI), star.ang_mom, T);
+    fprintf(fpointer, "%7g %7g %7g %6g %4g %8g %4g %6g %7g %6g  %g  %g  %g\n", 
+        star.e_center, star.Mass/MSUN, star.Mass_0/MSUN, Mstat, maxmass, star.R_e*1e-5, ratio_r, Rstat, star.Omega/(2.0*PI), star.Omega_K/(2.0*PI), star.ang_mom, T, W);
 
     M0 = star.Mass_0/MSUN;
  while(1){   
@@ -229,11 +230,12 @@ int main(int argc, char **argv)     /* Number of command line arguments, Command
       printf("Mass is NAN\n");
       break;
     }
-    T = (0.5*star.Omega*star.ang_mom)/(C*C);
+    T = (0.5*star.ang_mom*star.Omega)/(C*C);
+    W = star.Mp + (T/MSUN) - (star.Mass/MSUN);
     //printf("M0 = %g \t Mass_0 = %g\n", M0, star.Mass_0/MSUN);
     if((round(M0*100.0)/100.0) == (round(star.Mass_0/MSUN * 100.0)/100.0))
-    fprintf(fpointer, "%7g %7g %7g %6g %4g %8g %4g %6g %7g %6g  %g  %g\n", 
-        energy_value, star.Mass/MSUN, star.Mass_0/MSUN, Mstat, maxmass, star.R_e*1e-5, ratio_r, Rstat, star.Omega/(2.0*PI), star.Omega_K/(2.0*PI), star.ang_mom, T);
+    fprintf(fpointer, "%7g %7g %7g %6g %4g %8g %4g %6g %7g %6g  %g  %g  %g\n", 
+        energy_value, star.Mass/MSUN, star.Mass_0/MSUN, Mstat, maxmass, star.R_e*1e-5, ratio_r, Rstat, star.Omega/(2.0*PI), star.Omega_K/(2.0*PI), star.ang_mom, T, W);
 
    }
    e_center = e_center + 0.1;
