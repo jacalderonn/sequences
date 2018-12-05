@@ -261,7 +261,7 @@ int rns(double r_ratio,
   int a_check;
   int s,m;
   double cf=1.0;
-  double accuracy=1e-4;
+  double accuracy=1e-5;
   
  
 
@@ -293,7 +293,7 @@ int rns(double r_ratio,
 	       star->r_ratio, star->e_surface, star->r_e, star->Omega,
 	       &star->Mass, &star->Mass_0, &star->ang_mom, &star->R_e, 
 	       star->v_plus, star->v_minus, 
-	       &star->Omega_K);
+	       &star->Omega_K, &star->Mp);
 
   for (m=1;m<=MDIV;m++)
     for (s=1;s<=SDIV;s++){
