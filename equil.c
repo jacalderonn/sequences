@@ -251,12 +251,15 @@ void mass_radius(
                  double *R_e,
 		 double *v_plus,
 		 double *v_minus,
-		 double *Omega_K)
+		 double *Omega_K,
+     double *Mp)
 
 {
  int s,
      m,
      n_nearest;
+
+int index;
 
  
  double   
@@ -289,7 +292,9 @@ void mass_radius(
    omega_mu_0[SDIV+1],
    J,
    r_p,
-   s_p;                 
+   s_p,
+   D_mp[SDIV+1];        
+
 
         
    r_p= r_ratio*r_e;                              /* radius at pole */
@@ -320,6 +325,7 @@ void mass_radius(
  
    (*Mass) = 0.0;              /* initialize */
    (*Mass_0) = 0.0;
+   (*Mp) = 0.0;
    J=0.0;
 
    /* CALCULATE THE REST MASS DENSITY */
@@ -343,6 +349,7 @@ void mass_radius(
     D_m[s]=0.0;           /* initialize */
     D_m_0[s]=0.0;
     D_J[s]=0.0;
+    D_mp[s]=0.0;
 
     for(m=1;m<=MDIV-2;m+=2) {
      D_m[s] += (1.0/(3.0*(MDIV-1)))*( exp(2.0*alpha[s][m]+gama[s][m])*
@@ -361,7 +368,7 @@ void mass_radius(
               (((energy[s][m+2]+pressure[s][m+2])/(1.0-velocity_sq[s][m+2]))*
               (1.0+velocity_sq[s][m+2]+(2.0*s_gp[s]*sqrt(velocity_sq[s][m+2])/
               (1.0-s_gp[s]))*sqrt(1.0-mu[m+2]*mu[m+2])*r_e*omega[s][m+2]*
-              exp(-rho[s][m+2])) + 2.0*pressure[s][m+2]));    
+              exp(-rho[s][m+2])) + 2.0*pressure[s][m+2]));
 
      D_m_0[s] += (1.0/(3.0*(MDIV-1)))*( exp(2.0*alpha[s][m]+(gama[s][m]
               -rho[s][m])/2.0)*rho_0[s][m]/sqrt(1.0-velocity_sq[s][m])
@@ -371,7 +378,6 @@ void mass_radius(
          
              + exp(2.0*alpha[s][m+2]+(gama[s][m+2]
              -rho[s][m+2])/2.0)*rho_0[s][m+2]/sqrt(1.0-velocity_sq[s][m+2]));
-  
 
      D_J[s] += (1.0/(3.0*(MDIV-1)))*( sqrt(1.0-mu[m]*mu[m])*
               exp(2.0*alpha[s][m]+gama[s][m]-rho[s][m])*(energy[s][m]
@@ -386,13 +392,25 @@ void mass_radius(
               exp(2.0*alpha[s][m+2]+gama[s][m+2]-rho[s][m+2])*(energy[s][m+2]
               +pressure[s][m+2])*sqrt(velocity_sq[s][m+2])/
               (1.0-velocity_sq[s][m+2]));
+
+     D_mp[s] += (1.0/(3.0*(MDIV-1)))*( exp(2.0*alpha[s][m]+(gama[s][m]
+              -rho[s][m])/2.0)*((energy[s][m]+pressure[s][m])/sqrt(1.0-velocity_sq[s][m]))
+
+             + 4.0* exp(2.0*alpha[s][m+1]+(gama[s][m+1]
+             -rho[s][m+1])/2.0)*((energy[s][m+1]+pressure[s][m+1])/sqrt(1.0-velocity_sq[s][m+1]))
+         
+             + exp(2.0*alpha[s][m+2]+(gama[s][m+2]
+             -rho[s][m+2])/2.0)*((energy[s][m+2]+pressure[s][m+2])/sqrt(1.0-velocity_sq[s][m+2])));
+
     }
    }
-
+   index = 1;
     for(s=1;s<=SDIV-2;s+=2) { 
      (*Mass) += (SMAX/(3.0*(SDIV-1)))*(pow(sqrt(s_gp[s])/(1.0-s_gp[s]),4.0)*
           D_m[s]+4.0*pow(sqrt(s_gp[s+1])/(1.0-s_gp[s+1]),4.0)*D_m[s+1]
           +pow(sqrt(s_gp[s+2])/(1.0-s_gp[s+2]),4.0)*D_m[s+2]);
+
+     //printf("%d \t %g\n", index, (*Mass));      /***************************/
 
      (*Mass_0) += (SMAX/(3.0*(SDIV-1)))*(pow(sqrt(s_gp[s])/(1.0-s_gp[s]),4.0)*
           D_m_0[s]+4.0*pow(sqrt(s_gp[s+1])/(1.0-s_gp[s+1]),4.0)*D_m_0[s+1]
@@ -403,11 +421,17 @@ void mass_radius(
           D_J[s+1] + (pow(s_gp[s+2],3.0)/pow(1.0-s_gp[s+2],5.0))*
           D_J[s+2]);
 
+     (*Mp) += (SMAX/(3.0*(SDIV-1)))*(pow(sqrt(s_gp[s])/(1.0-s_gp[s]),4.0)*
+          D_mp[s]+4.0*pow(sqrt(s_gp[s+1])/(1.0-s_gp[s+1]),4.0)*D_mp[s+1]
+          +pow(sqrt(s_gp[s+2])/(1.0-s_gp[s+2]),4.0)*D_mp[s+2]);
+
+     index++;
     }
    
     if(strcmp(eos_type,"tab")==0) {
       (*Mass) *= 4*PI*sqrt(KAPPA)*C*C*pow(r_e,3.0)/G;
       (*Mass_0) *= 4*PI*sqrt(KAPPA)*C*C*pow(r_e,3.0)/G;
+      (*Mp) *= 4*PI*sqrt(KAPPA)*C*C*pow(r_e,3.0)/G;
     }
     else {
           (*Mass) *= 4*PI*pow(r_e,3.0);
@@ -424,6 +448,8 @@ void mass_radius(
     }
 
     (*ang_mom) = J;
+
+    //printf(" J = %g \n", J);
 
 
   /* Compute the velocities of co-rotating and counter-rotating particles
@@ -1663,8 +1689,8 @@ double   sum_rho=0.0,         /* intermediate sum in eqn for rho */
       n_of_it++;
 
  }   /* end while */
-
-
+//printf("N of it= %d\n", n_of_it);
+//printf("%g %g %g %g\n",alpha[1][1], gama[1][1], rho[1][1], omega[1][1]);
 
      /* COMPUTE OMEGA */  
 
