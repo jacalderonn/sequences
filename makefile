@@ -26,8 +26,9 @@ LOWSIZE=-DMDIV=65 -DSDIV=129
 #SIZE=-DMDIV=101 -DSDIV=201
 
 #VERY HIGH
-HIGHSIZE=-DMDIV=151 -DSDIV=301
+#HIGHSIZE=-DMDIV=151 -DSDIV=301
 #HIGHSIZE=-DMDIV=101 -DSDIV=201
+HIGHSIZE=-DMDIV=65 -DSDIV=129
 
 #VERY VERY HIGH
 #SIZE=-DMDIV=201 -DSDIV=401
@@ -51,7 +52,7 @@ MY_OWN =-g3 -Wall
 
 
 SOBJ=sequences.o findmodel.o equil.o equil_util.o nrutil.o stableorbit.o surface.o interpol.o
-
+MOBJ=findmodel.o equil.o equil_util.o nrutil.o stableorbit.o surface.o interpol.o maxmass.o
 
 #/*************************************************************************
 #*                    MAIN COMPILING INSTRUCTIONS
