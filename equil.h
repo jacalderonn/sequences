@@ -87,7 +87,8 @@ void mass_radius(
                  double *R_e,
 		 double *v_plus,
 		 double *v_minus,
-		 double *Omega_K);
+		 double *Omega_K,
+     double *Mp);
 
 double dm_dr_is(double r_is, 
                 double r, 
