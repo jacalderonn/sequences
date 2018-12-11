@@ -197,7 +197,7 @@ int main(int argc, char **argv)     /* Number of command line arguments, Command
    if(ratio_r < 0.7)
       rns(0.7, ej, &eos, &star);
   
-      rns(ratio_r, ej, &eos, &star); 
+   rns(ratio_r, ej, &eos, &star); 
 
    printf("%g %.5f  %.5f  %.5f %.5f %.3f %.4f %.4f \n",
         ej, star.Mass/MSUN, star.Mass_0/MSUN, Mstat, star.R_e*1e-5, ratio_r, Rstat, star.Omega/(2.0*PI));
@@ -220,7 +220,7 @@ int main(int argc, char **argv)     /* Number of command line arguments, Command
     if(ratio_r < 0.7)
       rns(0.7, ej, &eos, &star);
     
-      rns(ratio_r, ej, &eos, &star); 
+    rns(ratio_r, ej, &eos, &star); 
 
     printf("%g %.5f  %.5f  %.5f %.5f %.3f %.5f %.3f %.5f\n",
         energy_value, star.Mass/MSUN, star.Mass_0/MSUN, Mstat, star.R_e*1e-5, ratio_r, Rstat, star.Omega/(2.0*PI), star.Omega_K/(2.0*PI));
