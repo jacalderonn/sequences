@@ -872,8 +872,6 @@ int MaxMass(double e_min, double e_max, EOS *eos, NeutronStar *star, char name[8
 
 
 
-
-
     printf("Maximum Mass at: e=%g e15    m=%g Msun\n",e_max, star->Mass/MSUN);
     printf("Baryon Mass = %g Msun\n",star->Mass_0/MSUN);
     printf("Radius = %g  zeta=M/R=%g \n",star->R_e*1e-5, G*star->Mass/(star->R_e*C*C));
